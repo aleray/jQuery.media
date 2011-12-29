@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>HTML5 Video Player</title>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+		<script src="../source/jquery.media.core.js"></script>
+		<script src="../source/jquery.media.timeline.js"></script>
+		<script src="files/jquery.ui.autoscrollable.js"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function () {
+				var video = $.media('#video');
+                var titles = [];
+
+                $("section.section1").each(function() {
+                    var $section1 = $(this);
+                    var $wrapper1 = $(this).find('.wrapper').first();
+
+                    $wrapper1.autoscrollable();
+
+                    $section1.find('[data-start]').each(function() {
+                        var $section2 = $(this);
+                        var $wrapper2 = $(this).find('.wrapper');
+
+                        titles.push({
+                            time: [$section2.attr('data-start'), $section2.attr('data-end')],
+                            // time: $elt.attr('data-start'),
+                            fn: function(ms) {
+                                $section2.addClass('active');
+                                $wrapper1.autoscrollable("scrollto", $section2.get(0));
+                            },
+                            fn_out: function(ms) {
+                                $section2.removeClass('active');
+                            }
+                        });
+                    });
+                });
+
+                video.timeline(titles);
+
+                video.ready(function() {
+                    video.play();
+                });
+			});
+		</script>
+
+        <style type="text/css" media="screen">
+            section.section1 {
+                border: 1px solid black;
+                height: 180px;
+                width: 300px; 
+                float: left;
+            }
+            section.section1 h1 {
+                margin: 0;
+                height: 30px;
+            }
+            section.section1 > div.wrapper {
+                height: 150px;
+                overflow: auto;
+                background-color: white;
+            }
+            .active { background-color: yellow };
+        </style>
+	</head>
+
+	<body style="background: #CCC;">
+        <div><video id="video" src="files/video2.ogv" controls></video></div>
+
+        <section class="section1">
+            <h1>Interview</h1>
+            <div class="wrapper">
+                <section class="section2" data-end="00:00:05" data-start="00:00:00">
+                    <h2><span content="00:00:00" property="aa:start">00:00:00</span> &rarr;</h2>
+                    <div class="wrapper">
+                        This is the first title
+                    </div>
+                </section>
+                <section class="section2" data-end="00:00:10" data-start="00:00:05">
+                    <h2><span content="00:00:05" property="aa:start">00:00:05</span> &rarr; 
+                        <span content="00:00:10" property="aa:end">00:00:10</span></h2>
+                    <div class="wrapper">
+                        This is the second title
+                    </div>
+                </section>
+                <section class="section2" data-end="00:00:15" data-start="00:00:10">
+                    <h2><span content="00:00:10" property="aa:start">00:00:10</span> &rarr; 
+                        <span content="00:00:15" property="aa:end">00:00:15</span></h2>
+                    <div class="wrapper">
+                        This is the third title
+                    </div>
+                </section>
+                <section class="section2" data-end="00:00:20" data-start="00:00:15">
+                    <h2><span content="00:00:15" property="aa:start">00:00:15</span> &rarr; 
+                        <span content="00:00:20" property="aa:end">00:00:20</span></h2>
+                    <div class="wrapper">
+                        This is the third title
+                    </div>
+                </section>
+            </div>
+        </section>
+	</body>
+</html>

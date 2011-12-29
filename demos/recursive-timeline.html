@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>HTML5 Video Player</title>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+		<script src="../source/jquery.media.core.js"></script>
+		<script src="../source/jquery.media.timeline.js"></script>
+		<script src="../source/plugins/syncwith.js"></script>
+		<script src="files/jquery.ui.autoscrollable.js"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function () {
+				var video = $.media('#video');  // Master driver
+                var titlesByUrl = {};
+
+                $("section.section1").each(function(i) {
+                    var $section1 = $(this);
+                    var $wrapper1 = $(this).find('.wrapper').first();
+                    var about = $section1.attr('about');
+                    var timeOffset = 0;
+
+                    // computes the offset of the current section
+                    (function() {
+                        var isAbout = (about !== undefined);
+                        var driverSection2;
+                        var driverSection1;
+
+                        while (isAbout) {
+                            driverSection2 = $('[src="' + about + '"]').closest('.section2');
+                            timeOffset += driverSection2.attr('data-start').toSeconds();
+                            driverSection1 = driverSection2.closest('section1');
+                            isAbout = (driverSection1.attr('about') !== undefined);
+                        }
+                    })();
+
+                    if (titlesByUrl[about] === undefined) {
+                        titlesByUrl[about] = [];
+                    }
+
+                    $wrapper1.autoscrollable();
+
+                    $section1.find('[data-start]').each(function(j) {
+                        var $section2 = $(this);
+                        var $wrapper2 = $(this).find('.wrapper');
+
+                        titlesByUrl[about].push({
+                            time: [
+                                $section2.attr('data-start').toSeconds() + timeOffset, 
+                                $section2.attr('data-end').toSeconds() + timeOffset
+                            ],
+                            fn: function(ms) {
+                                $section2.addClass('active');
+                                $wrapper1.autoscrollable("scrollto", $section2.get(0));
+                                $section2.find('video').each(function() {
+                                    video.enableChannel('section-' + i, true);
+                                    // $.media(this).play();
+                                });
+                            },
+                            fn_out: function(ms) {
+                                $section2.removeClass('active');
+                                $section2.find('video').each(function() {
+                                    // $.media(this).stop();
+                                    video.enableChannel('section-' + i, false);
+                                });
+                            }
+                        });
+                    });
+
+                    video.createChannel("section-" + i, false)
+                    video.timeline(titlesByUrl[about], "section-" + i); 
+
+                    if (about !== undefined) {
+                        video.syncWith($.media('[src="' + about + '"]'), -timeOffset)
+                    }
+                });
+
+				video.syncReady(function () {
+					this.play();
+				});
+			});
+		</script>
+
+        <style type="text/css" media="screen">
+            section.section1 {
+                border: 1px solid black;
+                height: 380px;
+                width: 400px; 
+                float: left;
+            }
+            section.section1 h1 {
+                margin: 0;
+                height: 30px;
+            }
+            section.section1 > div.wrapper {
+                height: 350px;
+                overflow: auto;
+                background-color: white;
+            }
+            .active { background-color: yellow };
+        </style>
+	</head>
+
+	<body style="background: #CCC;">
+        <div><video id="video" src="files/video2.ogv" controls></video></div>
+
+        <section class="section1">
+            <h1>Interview</h1>
+            <div class="wrapper">
+                <section class="section2" data-end="00:00:05" data-start="00:00:00">
+                    <h2><span content="00:00:00" property="aa:start">00:00:00</span> &rarr;</h2>
+                    <div class="wrapper">
+                        This is the first title
+                    </div>
+                </section>
+                <section class="section2" data-end="00:00:20" data-start="00:00:05">
+                    <h2><span content="00:00:05" property="aa:start">00:00:05</span> &rarr; 
+                        <span content="00:00:20" property="aa:end">00:00:20</span></h2>
+                    <div class="wrapper">
+                        <video src="http://videos.mozilla.org/serv/webmademovies/popcorntest.ogv" controls></video>
+                    </div>
+                </section>
+                <section class="section2" data-end="00:00:25" data-start="00:00:20">
+                    <h2><span content="00:00:20" property="aa:start">00:00:20</span> &rarr; 
+                        <span content="00:00:25" property="aa:end">00:00:25</span></h2>
+                    <div class="wrapper">
+                        This is the fourth title
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <section class="section1" about="http://videos.mozilla.org/serv/webmademovies/popcorntest.ogv">
+            <h1>Interview</h1>
+            <div class="wrapper">
+                <section class="section2" data-end="00:00:05" data-start="00:00:00">
+                    <h2><span content="00:00:00" property="aa:start">00:00:00</span> &rarr;</h2>
+                    <div class="wrapper">
+                        This is the first title
+                    </div>
+                </section>
+                <section class="section2" data-end="00:00:10" data-start="00:00:05">
+                    <h2><span content="00:00:05" property="aa:start">00:00:05</span> &rarr; 
+                        <span content="00:00:10" property="aa:end">00:00:10</span></h2>
+                    <div class="wrapper">
+                        This is the second title
+                    </div>
+                </section>
+                <section class="section2" data-end="00:00:15" data-start="00:00:10">
+                    <h2><span content="00:00:10" property="aa:start">00:00:10</span> &rarr; 
+                        <span content="00:00:15" property="aa:end">00:00:15</span></h2>
+                    <div class="wrapper">
+                        This is the third title
+                    </div>
+                </section>
+                <section class="section2" data-end="00:00:20" data-start="00:00:15">
+                    <h2><span content="00:00:15" property="aa:start">00:00:15</span> &rarr; 
+                        <span content="00:00:20" property="aa:end">00:00:20</span></h2>
+                    <div class="wrapper">
+                        This is the fourth title
+                    </div>
+                </section>
+            </div>
+        </section>
+	</body>
+</html>
