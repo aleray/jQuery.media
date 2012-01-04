@@ -207,7 +207,7 @@
 
 
 	/**
-	 * function sources ([sources])
+	 * function sources ([sources], [autoload])
 	 *
 	 * Get or set source values
 	 */
@@ -777,6 +777,23 @@
 			this.$element.one(event, $.proxy(fn, this));
 		} else {
 			this.$element.bind(event, $.proxy(fn, this));
+		}
+
+		return this;
+	}
+
+
+
+	/**
+	 * function unbind (event, fn)
+	 *
+	 * Unbind a function to specific event
+	 */
+	$media.prototype.unbind = function (event, fn) {
+		if (fn) {
+			this.$element.unbind(event, $.proxy(fn, this));
+		} else {
+			this.$element.unbind(event);
 		}
 
 		return this;
