@@ -46,41 +46,44 @@
                     $section1.find('[data-start]').each(function(j) {
                         var $section2 = $(this);
                         var $wrapper2 = $(this).find('.wrapper');
+                        var start = $section2.attr('data-start').toSeconds() + timeOffset;
+                        var end = $section2.attr('data-end').toSeconds() + timeOffset;
 
                         titlesByUrl[about].push({
                             time: [
-                                $section2.attr('data-start').toSeconds() + timeOffset, 
-                                $section2.attr('data-end').toSeconds() + timeOffset
+                                start,
+                                end
                             ],
                             fn: function(ms) {
                                 $section2.addClass('active');
                                 $wrapper1.autoscrollable("scrollto", $section2.get(0));
                                 $section2.find('video').each(function() {
-                                    video.enableChannel('section-' + i, true);
-                                    // $.media(this).play();
+                                    //video.enableChannel('section-' + i, true);
+                                    video.syncWith($.media(this), -start)
+                                    $.media(this).play();
                                 });
                             },
                             fn_out: function(ms) {
                                 $section2.removeClass('active');
                                 $section2.find('video').each(function() {
-                                    // $.media(this).stop();
-                                    video.enableChannel('section-' + i, false);
+                                    // TODO: unSyncWith
+                                    $.media(this).pause();
+                                    //video.enableChannel('section-' + i, false);
                                 });
                             }
                         });
                     });
 
-                    video.createChannel("section-" + i, false)
-                    video.timeline(titlesByUrl[about], "section-" + i); 
-
-                    if (about !== undefined) {
-                        video.syncWith($.media('[src="' + about + '"]'), -timeOffset)
-                    }
+                    // video.createChannel("section-" + i, false)
+                    video.timeline(titlesByUrl[about]); 
                 });
 
-				video.syncReady(function () {
+				video.ready(function () {
 					this.play();
 				});
+				// video.syncReady(function () {
+				// 	this.play();
+				// });
 			});
 		</script>
 
