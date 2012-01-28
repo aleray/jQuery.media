@@ -1,5 +1,5 @@
 /**
- * $media (timeline module) jQuery plugin (v.1.2)
+ * $media (timeline module) jQuery plugin (v.1.2.1)
  *
  * 2011. Created by Oscar Otero (http://oscarotero.com / http://anavallasuiza.com)
  *
@@ -529,8 +529,9 @@
 
 		//Execute functions
 		var ms = this.time().secondsTo('ms');
+		var total_ms = this.totalTime().secondsTo('ms');
 
-		while (this.timeline_data.remaining_points && this.timeline_data.remaining_points[0] && this.timeline_data.remaining_points[0].ms[0] <= ms) {
+		while (this.timeline_data.remaining_points && this.timeline_data.remaining_points[0] && this.timeline_data.remaining_points[0].ms[0] <= ms && this.timeline_data.remaining_points[0].ms[0] < total_ms) {
 			var point = this.timeline_data.remaining_points.shift();
 
 			if (!point.waiting) {
@@ -543,15 +544,11 @@
 			}
 		}
 
-		if (!this.timeline_data.remaining_points) {
-			return;
-		}
-
 		//Execute out functions
 		this.executeTimelineOutPoints(ms);
 
 		//Create other timeout
-		if (this.element.paused || this.element.seeking || (!this.timeline_data.remaining_points.length && !this.timeline_data.remaining_outpoints.length)) {
+		if (!this.playing() || this.element.seeking || (!this.timeline_data.remaining_points.length && !this.timeline_data.remaining_outpoints.length)) {
 			return;
 		}
 
